@@ -25,5 +25,4 @@ describe Journey do
     subject.pass_exit(:exit_station)
     expect(subject.exit_station).to eq :exit_station
   end
-
 end
