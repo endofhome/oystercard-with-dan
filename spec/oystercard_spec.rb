@@ -10,7 +10,7 @@ describe OysterCard do
   # let(:journey_entry) { double :journey_entry, entry_station: :old_street, pass_entry: entry_station, pass_exit: exit_station}
   # let(:journey_exit) {double :journey_exit, entry_station: :old_street, pass_entry: entry_station, exit_station: :baker_street, pass_exit: exit_station}
 
-  let(:journey) {double :journey_exit, entry_station: :old_street, pass_entry: :old_street, exit_station: :baker_street, pass_exit: :baker_street}
+  let(:journey) {double :journey, entry_station: :old_street, pass_entry: :old_street, exit_station: :baker_street, pass_exit: :baker_street}
 
   let(:station) { double :station, name: :old_street, zone: 2}
 

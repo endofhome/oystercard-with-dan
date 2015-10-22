@@ -25,4 +25,20 @@ describe Journey do
     subject.pass_exit(:exit_station)
     expect(subject.exit_station).to eq :exit_station
   end
+
+  it 'a minimum fare is calculated if a full journey is completed' do
+    subject.pass_entry(:entry_station)
+    subject.pass_exit(:exit_station)
+    expect(subject.fare).to eq Journey::MIN_FARE
+  end
+
+  it 'a penalty fare is calculated if touched in but not touched out' do
+    subject.pass_entry(:entry_station)
+    expect(subject.fare).to eq Journey::PENALTY_FARE
+  end
+
+  it 'a penalty fare is calculated if touched out but not touched in' do
+    subject.pass_exit(:exit_station)
+    expect(subject.fare).to eq Journey::PENALTY_FARE
+  end
 end
