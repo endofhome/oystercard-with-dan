@@ -1,5 +1,5 @@
-require 'journey'
-require 'station'
+require_relative 'journey'
+require_relative 'station'
 
 class OysterCard
 
@@ -21,9 +21,10 @@ class OysterCard
   end
 
   def touch_out(station)
-    deduct(MIN_FARE)
     @journey.pass_exit(station)
+    deduct(MIN_FARE)
     @journeys.push(@journey)
+    @journey = nil
   end
 
   def top_up(amount)

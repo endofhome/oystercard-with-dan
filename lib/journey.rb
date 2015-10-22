@@ -10,8 +10,8 @@ class Journey
     @exit_station = nil
   end
 
-  def in_journey?
-    !!entry_station
+  def complete?
+    !!@entry_station && !!@exit_station
   end
 
   def pass_entry station
@@ -23,7 +23,7 @@ class Journey
   end
 
   def fare
-    ( !!@entry_station && !!@exit_station ) ? MIN_FARE : PENALTY_FARE
+    complete? ? MIN_FARE : PENALTY_FARE
   end
 
 end
