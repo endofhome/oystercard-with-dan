@@ -4,14 +4,8 @@ describe OysterCard do
 
   subject(:oystercard) { described_class.new }
 
-  # let(:entry_station) {double :entry_station, name: :old_street, zone: 1 }
-  # let(:exit_station) {double :exit_station, name: :baker_street, zone: 2 }
-
-  # let(:journey_entry) { double :journey_entry, entry_station: :old_street, pass_entry: entry_station, pass_exit: exit_station}
-  # let(:journey_exit) {double :journey_exit, entry_station: :old_street, pass_entry: entry_station, exit_station: :baker_street, pass_exit: exit_station}
-
   let(:journey) {double :journey, entry_station: :old_street, pass_entry: :old_street, exit_station: :baker_street, pass_exit: :baker_street}
-
+  let(:part_journey) {double :journey, entry_station: :old_street, pass_entry: :old_street, exit_station: nil, pass_exit: nil}
   let(:station) { double :station, name: :old_street, zone: 2}
 
 
@@ -50,26 +44,48 @@ describe OysterCard do
       expect { oystercard.touch_in(station, journey) }.to change{ oystercard.journey }.to journey
     end
 
+    it "deducts penalty fare when user doesn't previously touch out" do
+      allow(journey).to receive(:fare).and_return(6)
+      oystercard.top_up 10
+      oystercard.touch_in(station, journey)
+      expect{ oystercard.touch_in(station, journey) }.to change { oystercard.balance }.by -6
+    end
+
+    it "reccords teh journey if user doesn't previously touch out" do
+      allow(part_journey).to receive(:fare).and_return(6)
+      oystercard.top_up 10
+      oystercard.touch_in(station, part_journey)
+      oystercard.touch_in(station, part_journey)
+      expect(oystercard.journeys).to include part_journey
+    end
   end
 
   describe '#touch_out' do
 
-    it 'deducts the fare on touch out' do
+    before(:each) do
+      allow(journey).to receive(:fare).and_return(OysterCard::MIN_BALANCE)
       oystercard.top_up(10)
       oystercard.touch_in(station, journey)
-      expect{ oystercard.touch_out(station) }.to change { oystercard.balance }.by -OysterCard::MIN_FARE
     end
 
-    it 'adds a journey to @journeys history' do
-      oystercard.top_up(10)
+    it 'deducts the fare on touch out' do
+      expect{ oystercard.touch_out(station) }.to change { oystercard.balance }.by -OysterCard::MIN_BALANCE
+    end
+
+    it 'adds multiple journeys to @journeys history' do
+      oystercard.touch_out(station)
       oystercard.touch_in(station, journey)
-      expect{ oystercard.touch_out(station) }.to change { oystercard.journeys.length }.by 1
+      oystercard.touch_out(station)
+      expect(oystercard.journeys.length).to eq 2
     end
 
     it 'updates @journeys when touched out' do
-      oystercard.top_up(10)
-      oystercard.touch_in(station, journey)
       expect { oystercard.touch_out(station) }.to change{ oystercard.journeys }.to [journey]
+    end
+
+    it 'it reassigns journey from a journey object back to nil' do
+      oystercard.touch_out(station)
+      expect(oystercard.journey).to be nil
     end
   end
 end

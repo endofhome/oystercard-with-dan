@@ -4,7 +4,7 @@ require_relative 'station'
 class OysterCard
 
   MAX_BALANCE = 90
-  MIN_FARE = 1
+  MIN_BALANCE = 1
 
   attr_reader :balance, :journey, :journeys
 
@@ -15,15 +15,18 @@ class OysterCard
   end
 
   def touch_in(station, journey_klass=Journey.new)
-    raise "min funds not available" if balance < MIN_FARE
+    raise "min funds not available" if balance < MIN_BALANCE
+    @journeys << @journey if in_journey?
+    deduct if in_journey? 
     journey_klass.pass_entry(station)
     @journey = journey_klass
   end
 
-  def touch_out(station)
+  def touch_out(station, journey_klass=Journey.new)
+    @journey ||= journey_klass
     @journey.pass_exit(station)
-    deduct(MIN_FARE)
-    @journeys.push(@journey)
+    deduct
+    @journeys << @journey
     @journey = nil
   end
 
@@ -34,7 +37,11 @@ class OysterCard
 
   private
 
-  def deduct(amount)
- 	  @balance -= amount
+  def deduct
+ 	  @balance -= @journey.fare
+  end
+
+  def in_journey?
+    journey != nil
   end
 end
