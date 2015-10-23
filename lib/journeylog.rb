@@ -10,7 +10,6 @@ class JourneyLog
   end
 
   def start_journey (station, journey_klass=Journey.new)
-    outstanding_charges if in_journey?
     journey_klass.pass_entry(station)
     @current_journey = journey_klass
   end
@@ -27,8 +26,6 @@ class JourneyLog
     @current_journey = nil
     fare
   end
-
-  private
 
   def in_journey?
     current_journey != nil
