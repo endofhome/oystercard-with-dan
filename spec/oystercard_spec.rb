@@ -2,10 +2,10 @@ require 'oystercard'
 
 describe OysterCard do
   
-  let(:journeylog) {double :journeylog, outstanding_charges: 1}
+  let(:journeylog) {double :journeylog, outstanding_charges: 1, in_journey?: true,
+                            start_journey: :journey, exit_journey: 1, outstanding_charges: 6}
   let(:station) { double :station, name: :old_street, zone: 2}
   subject(:oystercard) { described_class.new(journeylog) }
-
 
   describe 'initialization' do
     it 'has a default balance of 0' do
@@ -13,7 +13,7 @@ describe OysterCard do
     end
 
     it 'creates a journey log object' do
-      expect(oystercard.send(:journeylog)).to eq journeylog
+      expect(oystercard.journeylog).to eq journeylog
     end
   end
 
@@ -28,22 +28,19 @@ describe OysterCard do
   end
 
   describe '#touch_in' do
+
     it 'raises an error if min funds not available' do
       expect { oystercard.touch_in(station) }.to raise_error "min funds not available"
     end
 
     it 'responds to journeylog.start_journey' do
-      allow(journeylog).to receive(:in_journey?).and_return true
+      oystercard.top_up 10
       expect(send(:journeylog)).to receive(:start_journey)
-      oystercard.top_up(10)
       oystercard.touch_in(station)
     end
 
     it "deducts penalty fare when user doesn't previously touch out" do
-      allow(journeylog).to receive(:start_journey)
-      allow(journeylog).to receive(:outstanding_charges).and_return 6
-      allow(journeylog).to receive(:in_journey?).and_return true
-      oystercard.top_up 10
+      oystercard.top_up 10  
       oystercard.touch_in(station)
       expect{ oystercard.touch_in(station) }.to change { oystercard.balance }.by -6
     end
@@ -51,17 +48,15 @@ describe OysterCard do
 
   describe '#touch_out' do
     before(:each) do
-      allow(journeylog).to receive(:start_journey)
-      allow(journeylog).to receive(:in_journey?).and_return true
       oystercard.top_up(10)
       oystercard.touch_in(station)
     end
-     it 'responds to journeylog.exit_journey' do
-      expect(journeylog).to receive(:exit_journey).and_return 1
+
+    it 'responds to journeylog.exit_journey' do
       oystercard.touch_out(station)
     end
+
     it 'deducts the fare on touch out' do
-      allow(journeylog).to receive(:exit_journey).and_return 1
       expect{ oystercard.touch_out(station) }.to change { oystercard.balance }.by -OysterCard::MIN_BALANCE
     end
   end

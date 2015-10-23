@@ -16,12 +16,12 @@ class JourneyLog
 
   def exit_journey (station, journey_klass=Journey.new)
     @current_journey ||= journey_klass
-    @current_journey.pass_exit(station)
+    current_journey.pass_exit(station)
     outstanding_charges
   end
 
   def outstanding_charges
-    @journeys << @current_journey
+    journeys << @current_journey
     fare = current_journey.fare
     @current_journey = nil
     fare
@@ -30,5 +30,4 @@ class JourneyLog
   def in_journey?
     current_journey != nil
   end
-
 end

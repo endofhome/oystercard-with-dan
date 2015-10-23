@@ -56,5 +56,4 @@ describe JourneyLog do
       expect(journeylog.outstanding_charges).to eq 1
     end
   end
-  
 end
