@@ -1,22 +1,37 @@
+require_relative 'journey'
+
 class JourneyLog
 
-  attr_reader :journey, :journeys
+  attr_reader :current_journey, :journeys
 
   def initialize
-    @journey = nil
+    @current_journey = nil
     @journeys = []
   end
 
   def start_journey (station, journey_klass=Journey.new)
-    # @journeys << @journey if in_journey?
+    outstanding_charges if in_journey?
     journey_klass.pass_entry(station)
-    @journey = journey_klass
+    @current_journey = journey_klass
+  end
+
+  def exit_journey (station, journey_klass=Journey.new)
+    @current_journey ||= journey_klass
+    @current_journey.pass_exit(station)
+    outstanding_charges
+  end
+
+  def outstanding_charges
+    @journeys << @current_journey
+    fare = current_journey.fare
+    @current_journey = nil
+    fare
   end
 
   private
 
   def in_journey?
-    journey != nil
+    current_journey != nil
   end
 
 end
