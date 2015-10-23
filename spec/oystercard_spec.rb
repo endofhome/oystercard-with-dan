@@ -14,11 +14,11 @@ describe OysterCard do
       expect(oystercard.balance).to eq 0
     end
 
-    it 'has a default journey of nil' do
+    it 'has a default journey of nil' do #
       expect(oystercard.journey).to be_nil
     end
 
-    it 'the list of journeys is empty' do
+    it 'the list of journeys is empty' do #
       expect(oystercard.journeys).to be_empty
     end
   end
@@ -39,7 +39,7 @@ describe OysterCard do
       expect { oystercard.touch_in(station, journey) }.to raise_error "min funds not available"
     end
 
-    it 'updates @journey when touched in' do
+    it 'updates @journey when touched in' do #
       oystercard.top_up 10
       expect { oystercard.touch_in(station, journey) }.to change{ oystercard.journey }.to journey
     end
@@ -51,7 +51,7 @@ describe OysterCard do
       expect{ oystercard.touch_in(station, journey) }.to change { oystercard.balance }.by -6
     end
 
-    it "reccords teh journey if user doesn't previously touch out" do
+    it "reccords the journey if user doesn't previously touch out" do #
       allow(part_journey).to receive(:fare).and_return(6)
       oystercard.top_up 10
       oystercard.touch_in(station, part_journey)

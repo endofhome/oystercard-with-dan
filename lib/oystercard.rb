@@ -10,8 +10,8 @@ class OysterCard
 
   def initialize
     @balance = 0
-    @journey = nil
-    @journeys = []
+    @journey = nil #
+    @journeys = [] #
   end
 
   def touch_in(station, journey_klass=Journey.new)
@@ -41,7 +41,7 @@ class OysterCard
  	  @balance -= @journey.fare
   end
 
-  def in_journey?
+  def in_journey? #
     journey != nil
   end
 end
